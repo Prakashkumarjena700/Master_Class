@@ -1,14 +1,19 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router'
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate()
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   const handelRegister = async () => {
+    setLoading(true)
     try {
       const res = await axios.post(`${baseUrl}/user/registration`, {
         fullName,
@@ -21,11 +26,15 @@ const Register = () => {
         setFullName("");
         setEmail("");
         setPassword("");
+        navigate("/login")
+
       } else {
         alert(res?.data?.message);
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -57,7 +66,7 @@ const Register = () => {
         onClick={handelRegister}
         className="border bg-teal-600  text-white p-2 cursor-pointer hover:bg-teal-500 transition-all duration-700"
       >
-        Register
+        {loading ? 'Loading...' : "Register"}
       </button>
     </div>
   );

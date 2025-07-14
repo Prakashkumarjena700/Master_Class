@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router'
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -7,7 +8,9 @@ const Login = () => {
 
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
-  const handelRegister = async () => {
+  const navigate = useNavigate()
+
+  const handelLogin = async () => {
     try {
       const res = await axios.post(`${baseUrl}/user/login`, {
         email,
@@ -16,8 +19,25 @@ const Login = () => {
 
       if (res?.data?.status) {
         alert(res?.data?.message);
+
+        const user = res?.data?.user;
+        const token = res?.data?.token;
+        const role = res?.data?.user?.role;
+
+        localStorage.setItem("user", JSON.stringify(user))
+        localStorage.setItem("token", token)
+
         setEmail("");
         setPassword("");
+
+        if (role == "admin") {
+          navigate("/admin")
+        } else if (role == "user") {
+          navigate("/user")
+        } else {
+          navigate("/")
+        }
+
       } else {
         alert(res?.data?.message);
       }
@@ -44,7 +64,7 @@ const Login = () => {
       />
 
       <button
-        onClick={handelRegister}
+        onClick={handelLogin}
         className="border bg-teal-600  text-white p-2 cursor-pointer hover:bg-teal-500 transition-all duration-700"
       >
         Login
